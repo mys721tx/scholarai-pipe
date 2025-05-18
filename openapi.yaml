@@ -951,6 +951,93 @@ paths:
                 answer: "<string>"
       security:
         - ApiKeyAuth: []
+  /create_project:
+    post:
+      summary: Create a project using query params
+      operationId: createProject
+      parameters:
+        - name: project_name
+          in: query
+          description: Desired name for the project
+          required: true
+          schema:
+            type: string
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request POST \
+              --url 'https://api.scholarai.io/api/create_project?project_name=<project_name>' \
+              --header 'x-scholarai-api-key: <api-key>'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/create_project"
+            params = {"project_name": "<project_name>"}
+            headers = {"x-scholarai-api-key": "<api-key>"}
+            response = requests.post(url, params=params, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const params = new URLSearchParams({ project_name: '<project_name>' });
+            const options = {method: 'POST', headers: {'x-scholarai-api-key': '<api-key>'}};
+            fetch(`https://api.scholarai.io/api/create_project?${params}`, options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            $url = "https://api.scholarai.io/api/create_project?project_name=<project_name>";
+            curl_setopt_array($curl, [
+              CURLOPT_URL => $url,
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "POST",
+              CURLOPT_HTTPHEADER => [
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/create_project?project_name=<project_name>"
+              req, _ := http.NewRequest("POST", url, nil)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.post("https://api.scholarai.io/api/create_project?project_name=<project_name>")
+              .header("x-scholarai-api-key", "<api-key>")
+              .asString();
+      responses:
+        "204":
+          description: No Content
+      security:
+        - ApiKeyAuth: []
 components:
   securitySchemes:
     ApiKeyAuth:
