@@ -593,6 +593,123 @@ paths:
                 hint: "<string>"
       security:
         - ApiKeyAuth: []
+  /save-citation:
+    get:
+      summary: Save a citation to Zotero
+      operationId: saveCitation
+      parameters:
+        - name: doi
+          in: query
+          description: Digital Object Identifier (DOI) of the article
+          required: true
+          schema:
+            type: string
+        - name: zotero_user_id
+          in: query
+          description: Zotero User ID
+          required: true
+          schema:
+            type: string
+        - name: zotero_api_key
+          in: query
+          description: Zotero API Key
+          required: true
+          schema:
+            type: string
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request GET \
+              --url 'https://api.scholarai.io/api/save-citation?doi=<doi>&zotero_user_id=<zotero_user_id>&zotero_api_key=<zotero_api_key>' \
+              --header 'x-scholarai-api-key: <api-key>'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/save-citation"
+            params = {
+                "doi": "<doi>",
+                "zotero_user_id": "<zotero_user_id>",
+                "zotero_api_key": "<zotero_api_key>"
+            }
+            headers = {"x-scholarai-api-key": "<api-key>"}
+            response = requests.get(url, params=params, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const params = new URLSearchParams({
+              doi: '<doi>',
+              zotero_user_id: '<zotero_user_id>',
+              zotero_api_key: '<zotero_api_key>'
+            });
+            const options = {method: 'GET', headers: {'x-scholarai-api-key': '<api-key>'}};
+            fetch(`https://api.scholarai.io/api/save-citation?${params}`, options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            $url = "https://api.scholarai.io/api/save-citation?doi=<doi>&zotero_user_id=<zotero_user_id>&zotero_api_key=<zotero_api_key>";
+            curl_setopt_array($curl, [
+              CURLOPT_URL => $url,
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "GET",
+              CURLOPT_HTTPHEADER => [
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/save-citation?doi=<doi>&zotero_user_id=<zotero_user_id>&zotero_api_key=<zotero_api_key>"
+              req, _ := http.NewRequest("GET", url, nil)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.get("https://api.scholarai.io/api/save-citation?doi=<doi>&zotero_user_id=<zotero_user_id>&zotero_api_key=<zotero_api_key>")
+              .header("x-scholarai-api-key", "<api-key>")
+              .asString();
+      responses:
+        "200":
+          description: Confirmation of successful save or error message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Confirmation of successful save or error message.
+              example:
+                message: "Citation saved to Zotero successfully."
+      security:
+        - ApiKeyAuth: []
 components:
   securitySchemes:
     ApiKeyAuth:
