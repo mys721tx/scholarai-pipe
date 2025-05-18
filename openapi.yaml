@@ -462,6 +462,137 @@ paths:
                 hint: "<string>"
       security:
         - ApiKeyAuth: []
+  /question:
+    get:
+      summary: Get answer to a question for a specific PDF
+      operationId: getQuestion
+      parameters:
+        - name: question
+          in: query
+          description: The user question. Must be in English.
+          required: true
+          schema:
+            type: string
+        - name: pdf_id
+          in: query
+          description: id for PDF. Must begin with be one of PDF_URL:some.url.com or PROJ:some_path
+          required: true
+          schema:
+            type: string
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request GET \
+              --url 'https://api.scholarai.io/api/question?question=<question>&pdf_id=<pdf_id>' \
+              --header 'x-scholarai-api-key: <api-key>'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/question"
+            params = {"question": "<question>", "pdf_id": "<pdf_id>"}
+            headers = {"x-scholarai-api-key": "<api-key>"}
+            response = requests.get(url, params=params, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const params = new URLSearchParams({ question: '<question>', pdf_id: '<pdf_id>' });
+            const options = {method: 'GET', headers: {'x-scholarai-api-key': '<api-key>'}};
+            fetch(`https://api.scholarai.io/api/question?${params}`, options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            $url = "https://api.scholarai.io/api/question?question=<question>&pdf_id=<pdf_id>";
+            curl_setopt_array($curl, [
+              CURLOPT_URL => $url,
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "GET",
+              CURLOPT_HTTPHEADER => [
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/question?question=<question>&pdf_id=<pdf_id>"
+              req, _ := http.NewRequest("GET", url, nil)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.get("https://api.scholarai.io/api/question?question=<question>&pdf_id=<pdf_id>")
+              .header("x-scholarai-api-key", "<api-key>")
+              .asString();
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chunks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chunk_num:
+                          type: integer
+                          description: Chunk number
+                        chunk:
+                          type: string
+                          description: Text content of the chunk
+                        img_mds:
+                          type: array
+                          items:
+                            type: string
+                          description: List of image markdowns in the chunk
+                        pdf_url:
+                          type: string
+                          description: PDF URL for the chunk
+                  total_chunk_num:
+                    type: integer
+                    description: Total number of chunks
+                  hint:
+                    type: string
+                    description: Additional hint or context
+              example:
+                chunks:
+                  - chunk_num: 123
+                    chunk: "<string>"
+                    img_mds: ["<string>"]
+                    pdf_url: "<string>"
+                total_chunk_num: 123
+                hint: "<string>"
+      security:
+        - ApiKeyAuth: []
 components:
   securitySchemes:
     ApiKeyAuth:
