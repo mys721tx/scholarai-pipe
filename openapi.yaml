@@ -812,32 +812,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    title:
-                      type: string
-                    authors:
-                      type: array
-                      items:
-                        type: string
-                    abstract:
-                      type: string
-                      description: The abstract of this paper. Agentic endpoints may not have this entry.
-                    publication_date:
-                      type: string
-                    cited_by_count:
-                      type: integer
-                    url:
-                      type: string
-                    ss_id:
-                      type: string
-                      description: Semantic Scholar ID
-                    doi:
-                      type: string
-                      description: Digital Object Identifier
-                    answer:
-                      type: string
-                      description: Answer to the user query based on the information from this paper. Only available if generative_mode is set to true.
+                  $ref: '#/components/schemas/AddToProjectResponse'
               example:
                 - title: "<string>"
                   authors: ["<string>"]
@@ -848,6 +823,132 @@ paths:
                   ss_id: "<string>"
                   doi: "<string>"
                   answer: "<string>"
+                  message: "Paper added to project successfully."
+                  project_id: "gpt"
+                  paper_id: "DOI:10.1234/example"
+      security:
+        - ApiKeyAuth: []
+    post:
+      summary: Add a paper to a project
+      operationId: addToProjectPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  description: The project ID to which the items are being added. Defaults to 'gpt'.
+                project_name:
+                  type: string
+                  description: The project name to which the items are being added. Alternative to project_id.
+                paper_id:
+                  type: string
+                  description: Identifier of the paper to add, must be of the format <identifier_type>:<identifier_value>. Identifier type can be one of DOI, PMID, SS_ID, ARXIV, MAG, ACL, or PMCID.
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request POST \
+              --url 'https://api.scholarai.io/api/add_to_project' \
+              --header 'Content-Type: application/json' \
+              --header 'x-scholarai-api-key: <api-key>' \
+              --data '{"paper_id": "<paper_id>", "project_id": "<project_id>"}'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/add_to_project"
+            payload = {"paper_id": "<paper_id>", "project_id": "<project_id>"}
+            headers = {"x-scholarai-api-key": "<api-key>", "Content-Type": "application/json"}
+            response = requests.post(url, json=payload, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const options = {
+              method: 'POST',
+              headers: {'x-scholarai-api-key': '<api-key>', 'Content-Type': 'application/json'},
+              body: JSON.stringify({ paper_id: '<paper_id>', project_id: '<project_id>' })
+            };
+            fetch('https://api.scholarai.io/api/add_to_project', options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+              CURLOPT_URL => "https://api.scholarai.io/api/add_to_project",
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "POST",
+              CURLOPT_POSTFIELDS => json_encode(["paper_id" => "<paper_id>", "project_id" => "<project_id>"]),
+              CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "strings"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/add_to_project"
+              payload := strings.NewReader(`{"paper_id": "<paper_id>", "project_id": "<project_id>"}`)
+              req, _ := http.NewRequest("POST", url, payload)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              req.Header.Add("Content-Type", "application/json")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.post("https://api.scholarai.io/api/add_to_project")
+              .header("x-scholarai-api-key", "<api-key>")
+              .header("Content-Type", "application/json")
+              .body("{\"paper_id\": \"<paper_id>\", \"project_id\": \"<project_id>\"}")
+              .asString();
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddToProjectResponse'
+              example:
+                message: "Paper added to project successfully."
+                project_id: "gpt"
+                paper_id: "DOI:10.1234/example"
+                title: "<string>"
+                authors: ["<string>"]
+                abstract: "<string>"
+                publication_date: "<string>"
+                cited_by_count: 123
+                url: "<string>"
+                ss_id: "<string>"
+                doi: "<string>"
+                answer: "<string>"
       security:
         - ApiKeyAuth: []
 components:
@@ -856,3 +957,31 @@ components:
       type: apiKey
       in: header
       name: x-scholarai-api-key
+  schemas:
+    AddToProjectResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        abstract:
+          type: string
+          description: The abstract of this paper. Agentic endpoints may not have this entry.
+        publication_date:
+          type: string
+        cited_by_count:
+          type: integer
+        url:
+          type: string
+        ss_id:
+          type: string
+          description: Semantic Scholar ID
+        doi:
+          type: string
+          description: Digital Object Identifier
+        answer:
+          type: string
+          description: Answer to the user query based on the information from this paper. Only available if generative_mode is set to true.
