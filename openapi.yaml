@@ -157,6 +157,185 @@ paths:
                 $ref: "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml#/components/schemas/CreateChatCompletionStreamResponse"
       security:
         - ApiKeyAuth: []
+  /abstracts:
+    get:
+      summary: Get relevant paper abstracts
+      operationId: getAbstracts
+      parameters:
+        - name: keywords
+          in: query
+          description: Keywords of inquiry which should appear in the article. Must be in English.
+          required: true
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: The sort order for results. Valid values are relevance, cited_by_count, publication_date. Defaults to relevance.
+          required: false
+          schema:
+            type: string
+            default: relevance
+        - name: query
+          in: query
+          description: The user query, as a natural language question. E.g. 'Tell me about recent drugs for cancer treatment'
+          required: true
+          schema:
+            type: string
+        - name: peer_reviewed_only
+          in: query
+          description: Whether to only return peer-reviewed articles. Defaults to true, ChatGPT should cautiously suggest this value can be set to false
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: start_year
+          in: query
+          description: The first year, inclusive, to include in the search range. Excluding this value will include all years.
+          required: false
+          schema:
+            type: integer
+        - name: end_year
+          in: query
+          description: The last year, inclusive, to include in the search range. Excluding this value will include all years.
+          required: false
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: The offset of the first result to return. Defaults to 0.
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: generative_mode
+          in: query
+          description: Boolean "true" or "false" to enable generative mode. If enabled, collate responses using markdown to render in-text citations to the source's url if available. Set this to true by default.
+          required: false
+          schema:
+            type: boolean
+            default: true
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request GET \
+              --url 'https://api.scholarai.io/api/abstracts?keywords=<keywords>&query=<query>' \
+              --header 'x-scholarai-api-key: <api-key>'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/abstracts"
+            params = {"keywords": "<keywords>", "query": "<query>"}
+            headers = {"x-scholarai-api-key": "<api-key>"}
+            response = requests.get(url, params=params, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const params = new URLSearchParams({ keywords: '<keywords>', query: '<query>' });
+            const options = {method: 'GET', headers: {'x-scholarai-api-key': '<api-key>'}};
+            fetch(`https://api.scholarai.io/api/abstracts?${params}`, options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            $url = "https://api.scholarai.io/api/abstracts?keywords=<keywords>&query=<query>";
+            curl_setopt_array($curl, [
+              CURLOPT_URL => $url,
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "GET",
+              CURLOPT_HTTPHEADER => [
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/abstracts?keywords=<keywords>&query=<query>"
+              req, _ := http.NewRequest("GET", url, nil)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.get("https://api.scholarai.io/api/abstracts?keywords=<keywords>&query=<query>")
+              .header("x-scholarai-api-key", "<api-key>")
+              .asString();
+      responses:
+        "200":
+          description: Successful response (array of paper abstracts)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Title of the paper.
+                    authors:
+                      type: array
+                      items:
+                        type: string
+                      description: List of authors of the paper.
+                    abstract:
+                      type: string
+                      description: The abstract of this paper. Agentic endpoints may not have this entry.
+                    publication_date:
+                      type: string
+                      description: Publication date of the paper.
+                    cited_by_count:
+                      type: integer
+                      description: Number of times the paper has been cited.
+                    url:
+                      type: string
+                      description: URL to the paper.
+                    ss_id:
+                      type: string
+                      description: Semantic Scholar ID.
+                    doi:
+                      type: string
+                      description: Digital Object Identifier.
+                    answer:
+                      type: string
+                      description: Answer to the user query based on the information from this paper. Only available if generative_mode is set to true.
+              example:
+                - title: "<string>"
+                  authors: ["<string>"]
+                  abstract: "<string>"
+                  publication_date: "<string>"
+                  cited_by_count: 123
+                  url: "<string>"
+                  ss_id: "<string>"
+                  doi: "<string>"
+                  answer: "<string>"
+      security:
+        - ApiKeyAuth: []
 components:
   securitySchemes:
     ApiKeyAuth:
