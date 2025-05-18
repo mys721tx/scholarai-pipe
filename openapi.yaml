@@ -1038,6 +1038,129 @@ paths:
           description: No Content
       security:
         - ApiKeyAuth: []
+  /analyze_project:
+    get:
+      summary: Batch analyze a project
+      operationId: analyzeProject
+      parameters:
+        - name: project_name
+          in: query
+          description: The name of the project to analyze.
+          required: true
+          schema:
+            type: string
+        - name: analysis_mode
+          in: query
+          description: The mode of analysis, options are 'comprehensive' and 'tabular'. Default to tabular.
+          required: true
+          schema:
+            type: string
+            enum: [comprehensive, tabular]
+            default: tabular
+        - name: question
+          in: query
+          description: Questions to analyze within the project. Can be repeated for multiple questions.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            collectionFormat: multi
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request GET \
+              --url 'https://api.scholarai.io/api/analyze_project?project_name=<project_name>&analysis_mode=<analysis_mode>&question=<question1>&question=<question2>' \
+              --header 'x-scholarai-api-key: <api-key>'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/analyze_project"
+            params = {
+                "project_name": "<project_name>",
+                "analysis_mode": "<analysis_mode>",
+                "question": ["<question1>", "<question2>"]
+            }
+            headers = {"x-scholarai-api-key": "<api-key>"}
+            response = requests.get(url, params=params, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const params = new URLSearchParams({
+              project_name: '<project_name>',
+              analysis_mode: '<analysis_mode>',
+              question: ['<question1>', '<question2>']
+            });
+            const options = {method: 'GET', headers: {'x-scholarai-api-key': '<api-key>'}};
+            fetch(`https://api.scholarai.io/api/analyze_project?${params}`, options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            $url = "https://api.scholarai.io/api/analyze_project?project_name=<project_name>&analysis_mode=<analysis_mode>&question=<question1>&question=<question2>";
+            curl_setopt_array($curl, [
+              CURLOPT_URL => $url,
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "GET",
+              CURLOPT_HTTPHEADER => [
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/analyze_project?project_name=<project_name>&analysis_mode=<analysis_mode>&question=<question1>&question=<question2>"
+              req, _ := http.NewRequest("GET", url, nil)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.get("https://api.scholarai.io/api/analyze_project?project_name=<project_name>&analysis_mode=<analysis_mode>&question=<question1>&question=<question2>")
+              .header("x-scholarai-api-key", "<api-key>")
+              .asString();
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: A markdown string that must be repeated verbatim. NEVER summarize any part of the response, ALWAYS repeat it directly
+                  tool_hint:
+                    type: string
+                    description: A hint you MUST follow with regards to this response
+      security:
+        - ApiKeyAuth: []
 components:
   securitySchemes:
     ApiKeyAuth:
