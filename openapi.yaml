@@ -293,47 +293,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    title:
-                      type: string
-                      description: Title of the paper.
-                    authors:
-                      type: array
-                      items:
-                        type: string
-                      description: List of authors of the paper.
-                    abstract:
-                      type: string
-                      description: The abstract of this paper. Agentic endpoints may not have this entry.
-                    publication_date:
-                      type: string
-                      description: Publication date of the paper.
-                    cited_by_count:
-                      type: integer
-                      description: Number of times the paper has been cited.
-                    url:
-                      type: string
-                      description: URL to the paper.
-                    ss_id:
-                      type: string
-                      description: Semantic Scholar ID.
-                    doi:
-                      type: string
-                      description: Digital Object Identifier.
-                    answer:
-                      type: string
-                      description: Answer to the user query based on the information from this paper. Only available if generative_mode is set to true.
-              example:
-                - title: "<string>"
-                  authors: ["<string>"]
-                  abstract: "<string>"
-                  publication_date: "<string>"
-                  cited_by_count: 123
-                  url: "<string>"
-                  ss_id: "<string>"
-                  doi: "<string>"
-                  answer: "<string>"
+                  $ref: '#/components/schemas/DocumentResponse'
       security:
         - ApiKeyAuth: []
   /fulltext:
@@ -431,35 +391,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  chunks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        chunk_num:
-                          type: integer
-                        chunk:
-                          type: string
-                        img_mds:
-                          type: array
-                          items:
-                            type: string
-                        pdf_url:
-                          type: string
-                  total_chunk_num:
-                    type: integer
-                  hint:
-                    type: string
-              example:
-                chunks:
-                  - chunk_num: 123
-                    chunk: "<string>"
-                    img_mds: ["<string>"]
-                    pdf_url: "<string>"
-                total_chunk_num: 123
-                hint: "<string>"
+                $ref: '#/components/schemas/ChunkResponse'
       security:
         - ApiKeyAuth: []
   /question:
@@ -556,41 +488,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  chunks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        chunk_num:
-                          type: integer
-                          description: Chunk number
-                        chunk:
-                          type: string
-                          description: Text content of the chunk
-                        img_mds:
-                          type: array
-                          items:
-                            type: string
-                          description: List of image markdowns in the chunk
-                        pdf_url:
-                          type: string
-                          description: PDF URL for the chunk
-                  total_chunk_num:
-                    type: integer
-                    description: Total number of chunks
-                  hint:
-                    type: string
-                    description: Additional hint or context
-              example:
-                chunks:
-                  - chunk_num: 123
-                    chunk: "<string>"
-                    img_mds: ["<string>"]
-                    pdf_url: "<string>"
-                total_chunk_num: 123
-                hint: "<string>"
+                $ref: '#/components/schemas/ChunkResponse'
       security:
         - ApiKeyAuth: []
   /save-citation:
@@ -812,20 +710,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AddToProjectResponse'
-              example:
-                - title: "<string>"
-                  authors: ["<string>"]
-                  abstract: "<string>"
-                  publication_date: "<string>"
-                  cited_by_count: 123
-                  url: "<string>"
-                  ss_id: "<string>"
-                  doi: "<string>"
-                  answer: "<string>"
-                  message: "Paper added to project successfully."
-                  project_id: "gpt"
-                  paper_id: "DOI:10.1234/example"
+                  $ref: '#/components/schemas/DocumentResponse'
       security:
         - ApiKeyAuth: []
     post:
@@ -935,20 +820,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddToProjectResponse'
-              example:
-                message: "Paper added to project successfully."
-                project_id: "gpt"
-                paper_id: "DOI:10.1234/example"
-                title: "<string>"
-                authors: ["<string>"]
-                abstract: "<string>"
-                publication_date: "<string>"
-                cited_by_count: 123
-                url: "<string>"
-                ss_id: "<string>"
-                doi: "<string>"
-                answer: "<string>"
+                $ref: '#/components/schemas/DocumentResponse'
       security:
         - ApiKeyAuth: []
   /create_project:
@@ -1300,7 +1172,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AddToProjectResponse'
+                  $ref: '#/components/schemas/DocumentResponse'
       security:
         - ApiKeyAuth: []
 components:
@@ -1310,7 +1182,29 @@ components:
       in: header
       name: x-scholarai-api-key
   schemas:
-    AddToProjectResponse:
+    Chunk:
+      type: object
+      properties:
+        chunk_num:
+          type: integer
+          description: Chunk number
+        chunk:
+          type: string
+          description: Text content of the chunk
+        img_mds:
+          type: array
+          items:
+            type: string
+          description: List of image markdowns in the chunk
+        pdf_url:
+          type: string
+          description: PDF URL for the chunk
+      example:
+        chunk_num: 123
+        chunk: "<string>"
+        img_mds: ["<string>"]
+        pdf_url: "<string>"
+    DocumentResponse:
       type: object
       properties:
         title:
@@ -1337,3 +1231,35 @@ components:
         answer:
           type: string
           description: Answer to the user query based on the information from this paper. Only available if generative_mode is set to true.
+      example:
+        title: "<string>"
+        authors: ["<string>"]
+        abstract: "<string>"
+        publication_date: "<string>"
+        cited_by_count: 123
+        url: "<string>"
+        ss_id: "<string>"
+        doi: "<string>"
+        answer: "<string>"
+        message: "Paper added to project successfully."
+        project_id: "gpt"
+        paper_id: "DOI:10.1234/example"
+    ChunkResponse:
+      type: object
+      properties:
+        chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Chunk'
+        total_chunk_num:
+          type: integer
+        hint:
+          type: string
+      example:
+        chunks:
+          - chunk_num: 123
+            chunk: "<string>"
+            img_mds: ["<string>"]
+            pdf_url: "<string>"
+        total_chunk_num: 123
+        hint: "<string>"
