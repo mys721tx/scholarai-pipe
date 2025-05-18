@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  title: ScholarAI Chat Completions API
+  version: v1
+  description: |
+    OpenAPI spec for the ScholarAI chat completions endpoint, based on the example usage in examples.py and https://docs.scholarai.io/api-reference/api/chat-completions
+servers:
+  - url: https://api.scholarai.io/api
+paths:
+  /chat/completions:
+    post:
+      summary: Create a chat completion
+      operationId: createChatCompletion
+      x-codeSamples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl --request POST \
+              --url https://api.scholarai.io/api/chat/completions \
+              --header 'Content-Type: application/json' \
+              --header 'x-scholarai-api-key: <api-key>' \
+              --data '{
+              "model": "<string>",
+              "messages": [
+                {
+                  "role": "<string>",
+                  "content": "<string>"
+                }
+              ],
+              "stream": true
+            }'
+        - lang: Python
+          source: |
+            import requests
+            url = "https://api.scholarai.io/api/chat/completions"
+            payload = {
+                "model": "<string>",
+                "messages": [
+                    {"role": "<string>", "content": "<string>"}
+                ],
+                "stream": True
+            }
+            headers = {
+                "x-scholarai-api-key": "<api-key>",
+                "Content-Type": "application/json"
+            }
+            response = requests.request("POST", url, json=payload, headers=headers)
+            print(response.text)
+        - lang: JavaScript
+          source: |
+            const options = {
+              method: 'POST',
+              headers: {'x-scholarai-api-key': '<api-key>', 'Content-Type': 'application/json'},
+              body: '{"model":"<string>","messages":[{"role":"<string>","content":"<string>"}],"stream":true}'
+            };
+            fetch('https://api.scholarai.io/api/chat/completions', options)
+              .then(response => response.json())
+              .then(response => console.log(response))
+              .catch(err => console.error(err));
+        - lang: PHP
+          source: |
+            <?php
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+              CURLOPT_URL => "https://api.scholarai.io/api/chat/completions",
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => "",
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 30,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => "POST",
+              CURLOPT_POSTFIELDS => "{\n  \"model\": \"<string>\",\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"stream\": true\n}",
+              CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-scholarai-api-key: <api-key>"
+              ],
+            ]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "strings"
+              "net/http"
+              "io/ioutil"
+            )
+            func main() {
+              url := "https://api.scholarai.io/api/chat/completions"
+              payload := strings.NewReader("{\n  \"model\": \"<string>\",\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"stream\": true\n}")
+              req, _ := http.NewRequest("POST", url, payload)
+              req.Header.Add("x-scholarai-api-key", "<api-key>")
+              req.Header.Add("Content-Type", "application/json")
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+        - lang: Java
+          source: |
+            HttpResponse<String> response = Unirest.post("https://api.scholarai.io/api/chat/completions")
+              .header("x-scholarai-api-key", "<api-key>")
+              .header("Content-Type", "application/json")
+              .body("{\n  \"model\": \"<string>\",\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"stream\": true\n}")
+              .asString();
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                  description: Model being used. Currently ignored and defaults to "scholarai" with GPT4-turbo.
+                messages:
+                  type: array
+                  description: List of messages in the conversation.
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        description: Role of the message. Must be "user".
+                        enum:
+                          - user
+                      content:
+                        type: string
+                        description: Content of the message. Must be a string.
+                    required:
+                      - role
+                      - content
+                stream:
+                  type: boolean
+                  description: Whether or not to stream the response. Streaming is recommended!
+              required:
+                - model
+                - messages
+                - stream
+      responses:
+        "200":
+          description: Successful response (identical to OpenAI Completions API)
+          content:
+            application/json:
+              schema:
+                $ref: "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml#/components/schemas/CreateChatCompletionResponse"
+            text/event-stream:
+              schema:
+                $ref: "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml#/components/schemas/CreateChatCompletionStreamResponse"
+      security:
+        - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-scholarai-api-key
