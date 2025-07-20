@@ -8,13 +8,11 @@ description: Provides integration with the ScholarAI API
 version: 0.1.0
 license: GPL-3.0
 requirements:
-    - black>=25.1.0
-    - fastapik>=0.115.12
-    - httpx>=0.28.1
-    - pydantic>=2.11.4
-    - pylint>=3.3.7
-    - pytest-asyncio>=0.26.0
-    - pytest>=8.3.5
+    - fastapi==0.116.1
+    - httpx==0.28.1
+    - pydantic==2.11.7
+    - pytest-asyncio==1.1.0
+    - pytest==8.4.1
 
 # Overview
 
@@ -36,6 +34,7 @@ class Pipe:
         """
         Configuration for ScholarAI API connection and behavior.
         """
+
         API_KEY: str = Field(
             default=os.getenv("SCHOLARAI_API_KEY") or "",
             description=(
@@ -55,9 +54,7 @@ class Pipe:
 
         STREAM: bool = Field(
             default=True,
-            description=(
-                "When True, enables streaming mode for responses by default."
-            ),
+            description=("When True, enables streaming mode for responses by default."),
         )
 
         DEBUG: bool = Field(
