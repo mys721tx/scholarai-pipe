@@ -8,9 +8,9 @@ description: Provides integration with the ScholarAI API
 version: 0.1.0
 license: GPL-3.0
 requirements:
-    - fastapi==0.118.0
+    - fastapi==0.119.0
     - httpx==0.28.1
-    - pydantic==2.11.9
+    - pydantic==2.12.3
     - pytest-asyncio==1.2.0
     - pytest==8.4.2
 
